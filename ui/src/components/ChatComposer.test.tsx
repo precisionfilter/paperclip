@@ -251,4 +251,30 @@ describe("ChatComposer", () => {
     expect(container.querySelector('[data-testid="chat-composer-drop-overlay"]')).toBeTruthy();
     act(() => root.unmount());
   });
+
+  it("shows a disabled spinner while submitting when no onStop is given", () => {
+    const root = createRoot(container);
+    act(() => {
+      root.render(<Harness initial="hi" submitting disabled />);
+    });
+    const button = sendButton();
+    expect(button.disabled).toBe(true);
+    act(() => root.unmount());
+  });
+
+  it("shows a clickable stop button while submitting when onStop is given", () => {
+    const onStop = vi.fn();
+    const onSubmit = vi.fn();
+    const root = createRoot(container);
+    act(() => {
+      root.render(<Harness initial="hi" submitting disabled onSubmit={onSubmit} onStop={onStop} stopLabel="Stop" />);
+    });
+    const button = container.querySelector<HTMLButtonElement>('button[aria-label="Stop"]')!;
+    expect(button).toBeTruthy();
+    expect(button.disabled).toBe(false);
+    act(() => button.click());
+    expect(onStop).toHaveBeenCalledTimes(1);
+    expect(onSubmit).not.toHaveBeenCalled();
+    act(() => root.unmount());
+  });
 });

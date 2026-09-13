@@ -2540,6 +2540,25 @@ function IssueChatAssistantMessage({
               {isStoppingRun ? stoppingRunLabel : stopRunLabel}
             </DropdownMenuItem>
           ) : null}
+          {canStopRun && runId
+            ? runFinalizationActions.map((action) => (
+                <DropdownMenuItem
+                  key={action.id}
+                  disabled={action.disabled}
+                  className={
+                    action.id === "cancel"
+                      ? "text-red-700 focus:text-red-800 dark:text-red-300 dark:focus:text-red-200"
+                      : undefined
+                  }
+                  onSelect={() => {
+                    void action.onSelect(runId);
+                  }}
+                >
+                  <Square className="mr-2 h-3.5 w-3.5 fill-current" />
+                  {action.isPending ? action.pendingLabel : action.label}
+                </DropdownMenuItem>
+              ))
+            : null}
           {runHref ? (
             <DropdownMenuItem asChild>
               <Link to={runHref} target="_blank" rel="noreferrer noopener">

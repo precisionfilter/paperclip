@@ -9,7 +9,7 @@ import {
   type KeyboardEvent as ReactKeyboardEvent,
   type ReactNode,
 } from "react";
-import { AlertTriangle, Check, Loader2, Paperclip, Send } from "lucide-react";
+import { AlertTriangle, Check, Loader2, Paperclip, Send, Square } from "lucide-react";
 import { cn } from "../lib/utils";
 
 /**
@@ -72,6 +72,15 @@ export interface ChatComposerProps {
   /** Accessible label for the send button. */
   sendLabel?: string;
   /**
+   * When provided, the send button becomes a clickable stop control while
+   * `submitting` is true, instead of a disabled spinner. Use for surfaces
+   * where a send streams a live response back (e.g. board chat) rather than
+   * just posting a comment.
+   */
+  onStop?: () => void;
+  /** Accessible label for the stop button (shown only while submitting, when `onStop` is set). */
+  stopLabel?: string;
+  /**
    * When provided, an attach button, drag-and-drop, and the attachment chip list
    * render. The parent owns the actual upload and reflects progress back through
    * the `attachments` prop. Omit entirely to render bare (no attach affordance).
@@ -122,6 +131,8 @@ export const ChatComposer = forwardRef<ChatComposerHandle, ChatComposerProps>(fu
     surface = "card",
     autoFocus = false,
     sendLabel = "Send message",
+    onStop,
+    stopLabel = "Stop",
     onAttachFiles,
     attachments = [],
     attaching = false,
@@ -360,19 +371,28 @@ export const ChatComposer = forwardRef<ChatComposerHandle, ChatComposerProps>(fu
         <button
           type="button"
           onClick={() => {
-            if (canSend) onSubmit();
+            if (submitting && onStop) onStop();
+            else if (canSend) onSubmit();
           }}
-          disabled={!canSend}
-          aria-label={sendLabel}
-          title={sendLabel}
+          disabled={!canSend && !(submitting && onStop)}
+          aria-label={submitting && onStop ? stopLabel : sendLabel}
+          title={submitting && onStop ? stopLabel : sendLabel}
           className={cn(
             "grid h-7 w-7 shrink-0 place-items-center rounded-md transition-colors duration-150 disabled:cursor-not-allowed",
-            canSend
+            canSend || (submitting && onStop)
               ? "bg-foreground text-background hover:opacity-90"
               : "bg-accent text-muted-foreground",
           )}
         >
-          {submitting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Send className="h-3.5 w-3.5" />}
+          {submitting ? (
+            onStop ? (
+              <Square className="h-3 w-3 fill-current" />
+            ) : (
+              <Loader2 className="h-3.5 w-3.5 animate-spin" />
+            )
+          ) : (
+            <Send className="h-3.5 w-3.5" />
+          )}
         </button>
       </div>
     </div>
