@@ -178,7 +178,7 @@ describe("managed install commands", () => {
       file === "corepack" ||
       (file === "npm" && args[0] === "pack") ||
       (file === process.execPath && args[0]?.endsWith("prepare-bundled-package.mjs")));
-    expect(buildCalls).toHaveLength(9);
+    expect(buildCalls).toHaveLength(11);
     for (const call of buildCalls) {
       const env = call[2]?.env;
       expect(env, `${call[0]} ${call[1].join(" ")} must run with an explicit env`).toBeDefined();
@@ -186,6 +186,10 @@ describe("managed install commands", () => {
     }
     const uiPackCall = buildCalls.find(([file, , options]) => file === "corepack" && options?.env?.PAPERCLIP_RELEASE_REUSE_UI_DIST === "1");
     expect(uiPackCall).toBeDefined();
+    const uiBuildCall = buildCalls.find(([file, args]) => file === "corepack" && args.includes("@paperclipai/ui") && args.includes("build"));
+    expect(uiBuildCall).toBeDefined();
+    const uiDistPrepareCall = buildCalls.find(([file, args]) => file === "bash" && args.includes("scripts/prepare-server-ui-dist.sh"));
+    expect(uiDistPrepareCall).toBeDefined();
   });
 
   it("resolves the complete server workspace dependency closure in dependency order", () => {
