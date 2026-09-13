@@ -21,6 +21,7 @@ import {
   GanttChartSquare,
   LayoutGrid,
   Users,
+  Building2,
 } from "lucide-react";
 import { useState, type ReactNode } from "react";
 import { useQuery } from "@tanstack/react-query";
@@ -260,7 +261,8 @@ export function Sidebar({ children }: { children?: ReactNode }) {
               label="Organization"
               collapsible={{ open: organizationOpen, onOpenChange: setOrganizationOpen }}
             >
-              <SidebarNavItem to="/org" label="Org" icon={Network} />
+              <SidebarNavItem to="/org-chart" label="Org Chart" icon={Network} />
+              <SidebarNavItem to="/company" label="Company" icon={Building2} />
               <SidebarNavItem to="/apps" label="Connectors" icon={Unplug} />
               <SidebarNavItem to="/timeline" label="Timeline" icon={GanttChartSquare} />
               <SidebarNavItem to="/costs" label="Costs" icon={DollarSign} />

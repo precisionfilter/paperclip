@@ -78,9 +78,11 @@ export {
   interactionResolverGovernanceSchema,
   updateCompanySchema,
   updateCompanyBrandingSchema,
+  updateCompanyMdSchema,
   type CreateCompany,
   type UpdateCompany,
   type UpdateCompanyBranding,
+  type UpdateCompanyMd,
 } from "./company.js";
 export {
   environmentDriverSchema,

@@ -8,6 +8,7 @@ import type {
   CompanyPortabilityPreviewRequest,
   CompanyPortabilityPreviewResult,
   UpdateCompanyBranding,
+  UpdateCompanyMd,
 } from "@paperclipai/shared";
 import type { ExportFidelityReport } from "@paperclipai/shared/portability-fidelity";
 import {
@@ -115,6 +116,9 @@ export const companiesApi = {
   ) => api.patch<Company>(`/companies/${companyId}`, data),
   updateBranding: (companyId: string, data: UpdateCompanyBranding) =>
     api.patch<Company>(`/companies/${companyId}/branding`, data),
+  getCompanyMd: (companyId: string) => api.get<{ content: string }>(`/companies/${companyId}/company-md`),
+  updateCompanyMd: (companyId: string, data: UpdateCompanyMd) =>
+    api.put<{ content: string }>(`/companies/${companyId}/company-md`, data),
   archive: (companyId: string) => api.post<Company>(`/companies/${companyId}/archive`, {}),
   remove: (companyId: string) => api.delete<{ ok: true }>(`/companies/${companyId}`),
   exportBundle: (

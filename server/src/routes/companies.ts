@@ -24,6 +24,7 @@ import {
   feedbackVoteValueSchema,
   hidesCompanyPage,
   updateCompanyBrandingSchema,
+  updateCompanyMdSchema,
   updateCompanySchema,
 } from "@paperclipai/shared";
 import {
@@ -50,6 +51,7 @@ import {
 } from "../services/company-import-transfers.js";
 import { companyTransferRunService } from "../services/company-transfer-runs.js";
 import { agentInstructionsBundleMode } from "../services/agent-instructions.js";
+import { readCompanyMd, writeCompanyMd } from "../services/company-md.js";
 import { resolvePortableExportAgentSelection } from "../services/company-portability-agent-selection.js";
 import {
   accessService,
@@ -415,6 +417,30 @@ export function companyRoutes(db: Db, storage?: StorageService, options?: Compan
     res.status(400).json({
       error: "Missing companyId in path. Use /api/companies/{companyId}/issues.",
     });
+  });
+
+  router.get("/:companyId/company-md", async (req, res) => {
+    const companyId = req.params.companyId as string;
+    assertCompanyAccess(req, companyId);
+    res.json({ content: await readCompanyMd(companyId) });
+  });
+
+  router.put("/:companyId/company-md", async (req, res) => {
+    const companyId = req.params.companyId as string;
+    assertBoard(req);
+    assertCompanyAccess(req, companyId);
+    const { content } = updateCompanyMdSchema.parse(req.body);
+    await writeCompanyMd(companyId, content);
+    await logActivity(db, {
+      companyId,
+      actorType: "user",
+      actorId: req.actor.userId ?? "board",
+      action: "company.company_md_updated",
+      entityType: "company",
+      entityId: companyId,
+      details: {},
+    });
+    res.json({ content });
   });
 
   router.get("/:companyId/artifacts", async (req, res) => {

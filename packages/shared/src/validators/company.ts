@@ -64,3 +64,9 @@ export const updateCompanyBrandingSchema = z
   );
 
 export type UpdateCompanyBranding = z.infer<typeof updateCompanyBrandingSchema>;
+
+export const updateCompanyMdSchema = z.object({
+  content: z.string().max(200_000),
+});
+
+export type UpdateCompanyMd = z.infer<typeof updateCompanyMdSchema>;

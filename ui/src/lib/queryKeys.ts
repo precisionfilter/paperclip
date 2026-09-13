@@ -26,6 +26,7 @@ export const queryKeys = {
     stats: ["companies", "stats"] as const,
     exportFidelity: (companyId: string) =>
       ["companies", companyId, "export-fidelity"] as const,
+    companyMd: (companyId: string) => ["companies", companyId, "company-md"] as const,
   },
   apps: {
     gallery: (companyId: string) => ["apps", companyId, "gallery"] as const,
