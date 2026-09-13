@@ -197,6 +197,7 @@ export function BoardChat() {
   const hasRestoredScrollRef = useRef(false);
   const composerRef = useRef<ChatComposerHandle>(null);
   const elapsedTimerRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   /** True when the user is scrolled away from the bottom AND new content
    *  has arrived they can't see. Drives the floating "jump to latest" chip. */
@@ -559,6 +560,7 @@ export function BoardChat() {
 
       try {
         const controller = new AbortController();
+        abortControllerRef.current = controller;
         const fetchTimeout = setTimeout(() => controller.abort(), 130000);
         const res = await fetch("/api/board/chat/stream", {
           method: "POST",
@@ -631,12 +633,17 @@ export function BoardChat() {
           queryClient.invalidateQueries({ queryKey: queryKeys.issues.comments(boardIssueId) });
         }
       } catch (err) {
-        console.error("Board chat error:", err);
         setStatusText("");
-        setErrorText(
-          "The board assistant is unavailable right now. Please try again in a moment.",
-        );
+        if (err instanceof DOMException && err.name === "AbortError") {
+          setStreamingText("");
+        } else {
+          console.error("Board chat error:", err);
+          setErrorText(
+            "The board assistant is unavailable right now. Please try again in a moment.",
+          );
+        }
       } finally {
+        abortControllerRef.current = null;
         setSending(false);
         composerRef.current?.focus();
       }
@@ -973,6 +980,8 @@ export function BoardChat() {
               submitting={sending}
               disabled={sending}
               sendLabel="Send message"
+              onStop={() => abortControllerRef.current?.abort()}
+              stopLabel="Stop"
               className="pointer-events-auto"
             />
           </div>
