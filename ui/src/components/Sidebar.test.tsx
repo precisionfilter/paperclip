@@ -299,7 +299,7 @@ describe("Sidebar", () => {
     expect(container.querySelector('[data-testid="sidebar-projects"]')).not.toBeNull();
     expect(container.querySelector('[data-testid="sidebar-agents"]')?.getAttribute("data-streamlined")).toBe("undefined");
     expect(container.textContent).toContain("Organization");
-    expect(labels).toEqual(expect.arrayContaining(["Org", "Connectors", "Timeline", "Costs", "Activity", "Settings"]));
+    expect(labels).toEqual(expect.arrayContaining(["Org Chart", "Company", "Connectors", "Timeline", "Costs", "Activity", "Settings"]));
     expect(labels).not.toContain("Audit");
     expect(labels).not.toContain("Projects");
     expect(container.querySelector('a[href="/agents"]')).toBeNull();
